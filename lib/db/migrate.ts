@@ -12,16 +12,23 @@ if (!process.env.DATABASE_URL) {
 }
 
 async function runMigration() {
+  console.warn('🔄 Starting database migration...')
+
   try {
+    // Create a Neon SQL connection
     const sql = neon(process.env.DATABASE_URL!)
+
+    // Initialize Drizzle with the connection
     const db = drizzle(sql)
 
+    // Run migrations from the drizzle folder
+    console.warn('📂 Running migrations from ./drizzle folder')
     await migrate(db, { migrationsFolder: './drizzle' })
-    console.warn('All migrations are successfully done')
+
+    console.warn('✅ Database migration completed successfully!')
   }
-  catch {
-    console.error('Migration failed')
-    // exit with error code 1
+  catch (error) {
+    console.error('❌ Migration failed:', error)
     process.exit(1)
   }
 }
